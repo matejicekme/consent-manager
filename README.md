@@ -64,6 +64,65 @@ import { CookieConsent } from "@matejicek-me/consent-manager";
 
 That's it. The banner appears on first visit, the choice is persisted in `localStorage`, and Google Consent Mode v2 signals are pushed to `dataLayer` automatically.
 
+## Wiring it up in GTM (required for actual compliance)
+
+**Installing the banner is not enough on its own.** This package signals
+the user's choice to Google Consent Mode v2 via `dataLayer.push(['consent', 'update', ...])`,
+but your tags in Google Tag Manager will still fire unless you gate them
+explicitly on those consent signals.
+
+For each tag you ship, open it in GTM → **Advanced Settings** → **Consent Settings**,
+choose **"Require additional consent for tag to fire"**, and add the consent
+types below.
+
+### Standard tag → consent type mapping
+
+| Tag | Required consent type(s) |
+|---|---|
+| Google Analytics 4 (Configuration / Event) | `analytics_storage` |
+| Reddit Pixel | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| Meta / Facebook Pixel | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| TikTok Pixel | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| LinkedIn Insight Tag | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| Google Ads Conversion / Remarketing | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| Microsoft UET (Bing Ads) | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| Hotjar / Microsoft Clarity / heatmaps | `analytics_storage` |
+| Plausible / Fathom (cookieless) | none — these don't store identifiers |
+| Stripe / Firebase Auth / session cookies | none — strictly necessary, never gate |
+
+### How the categories in this package map to consent types
+
+This package exposes 3 fixed categories. Each maps to one or more
+Google Consent Mode v2 signals when the user toggles it:
+
+| Category in UI | Signals set to `granted` when checked |
+|---|---|
+| Strictly necessary (locked ON) | `security_storage`, `functionality_storage` |
+| Analytics | `analytics_storage`, `personalization_storage` |
+| Advertising | `ad_storage`, `ad_user_data`, `ad_personalization` |
+
+When unchecked, those signals are pushed as `denied`. The defaults
+emitted by `defaultConsentScript()` (before GTM loads) are `denied` for
+everything except `security_storage`, which is always `granted`.
+
+### Testing your setup
+
+1. In GTM, click **Preview** (top right) → enter your site URL.
+2. On your site, open the banner and refuse everything.
+3. In the Tag Assistant pane, your analytics/ads tags should appear under
+   **Tags not fired** with the reason "Consent not granted".
+4. Reload the page, this time accept everything in the banner.
+5. The same tags should now appear under **Tags fired**.
+
+If a tag fires regardless of your choice, you forgot to configure its
+Consent Settings — go back into the tag and set the required consent types.
+
+### Don't forget to publish
+
+After verifying in Preview mode, hit **Submit** in GTM and publish the
+container version. Preview mode only affects you; the default `denied`
+state on your production users is what protects you legally.
+
 ## Theming
 
 Override the CSS custom properties on the root either via your own stylesheet or inline:

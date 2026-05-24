@@ -1,6 +1,6 @@
 {
   "name": "@matejicek-me/consent-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tiny, themeable, GDPR/CNIL-compliant cookie consent manager for React with built-in Google Consent Mode v2 support.",
   "keywords": [
     "cookie",
