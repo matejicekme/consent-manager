@@ -248,6 +248,7 @@
   background: var(--mcm-border-strong);
   border-radius: 999px;
   transition: background 160ms ease;
+  pointer-events: none;
 }
 
 .mcm-toggle-thumb {
@@ -260,6 +261,11 @@
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.mcm-toggle input {
+  z-index: 1;
 }
 
 .mcm-toggle input:checked ~ .mcm-toggle-track {

@@ -14,6 +14,12 @@ import { pushConsentUpdate } from "./consent-mode.js";
 import { getMessages } from "./translations.js";
 
 const OPEN_EVENT = "matejicekme-consent:open";
+const CHANGE_EVENT = "matejicekme-consent:change";
+
+function emitChange(record: ConsentRecord): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: record }));
+}
 
 export type CookieConsentProps = {
   /**
@@ -117,6 +123,7 @@ export function CookieConsent({
       setDraft(saved.choices);
       if (googleConsentMode) pushConsentUpdate(saved.choices);
       onChange?.(saved);
+      emitChange(saved);
     } else {
       setBannerOpen(true);
     }
@@ -153,6 +160,7 @@ export function CookieConsent({
       saveConsent(record, storageKey);
       if (googleConsentMode) pushConsentUpdate(choices);
       onChange?.(record);
+      emitChange(record);
       setBannerOpen(false);
       setPreferencesOpen(false);
       setDraft(choices);

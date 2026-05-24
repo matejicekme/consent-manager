@@ -123,6 +123,124 @@ After verifying in Preview mode, hit **Submit** in GTM and publish the
 container version. Preview mode only affects you; the default `denied`
 state on your production users is what protects you legally.
 
+## Adding a new vendor later
+
+When you add a new tracker (e.g. Zoho Analytics, Hotjar, a new ad pixel),
+the consent you already collected from existing users **does not cover
+the new vendor**. GDPR requires a fresh informed consent. Workflow:
+
+### 1. Pick the right category
+
+Identify what kind of cookies the vendor sets, then map to a category:
+
+| Vendor type | Category | Required GTM consent type |
+|---|---|---|
+| Web analytics (GA4, Zoho, Matomo, Mixpanel) | Analytics | `analytics_storage` |
+| Heatmaps / session replay (Hotjar, Clarity, FullStory) | Analytics | `analytics_storage` |
+| Ad / retargeting pixel (Reddit, Meta, TikTok, LinkedIn, Google Ads) | Advertising | `ad_storage`, `ad_user_data`, `ad_personalization` |
+| Payment fraud (Stripe, PayPal) | Necessary | none — strictly necessary, never gate |
+| Auth / session (Firebase Auth, NextAuth) | Necessary | none — strictly necessary, never gate |
+| Chat / support widget | Analytics or Necessary | depends — if they track behavior, `analytics_storage`; if pure live chat, none |
+
+### 2. Add the tag in GTM with consent settings
+
+1. **Tags → New** → paste the vendor's snippet (Custom HTML) or pick a
+   template from the gallery
+2. Pick a trigger (usually **All Pages** for trackers, or a custom event)
+3. **Advanced Settings → Consent Settings → Require additional consent
+   for tag to fire** → add the consent type(s) from the table above
+
+### 3. Test in GTM Preview
+
+- Refuse the category in the banner → tag must appear in **Tags not fired**
+- Accept the category → tag must appear in **Tags fired**
+
+If the tag fires either way, you forgot the Consent Settings.
+
+### 4. Update your privacy policy
+
+Add the vendor to your `/privacy` page with at minimum:
+- Name + legal entity + country
+- Purpose of the cookies
+- Data collected
+- Retention period of each cookie they set
+- Link to the vendor's own privacy policy
+
+This is a GDPR requirement, not just a courtesy — your CMP cannot
+substitute for proper disclosure.
+
+### 5. Bump the `version` prop to force re-consent
+
+This is the step most developers forget. Existing users with a saved
+choice have only consented to your **previous** vendor list. Bumping the
+prop invalidates that choice and re-prompts everyone:
+
+```tsx
+// before
+<CookieConsent version="2026.05" />
+
+// after adding Zoho Analytics
+<CookieConsent version="2026.06" />
+```
+
+The package detects the mismatch in `localStorage`, ignores the stored
+record, and shows the banner again on the next page load — automatically
+for every user. No custom code needed.
+
+Use a date-based scheme (`YYYY.MM`) or a simple integer — anything as
+long as you bump it whenever your tracking surface changes.
+
+### 6. Publish the GTM container
+
+**Submit → Publish** in GTM. Until you publish, the new tag and its
+consent gating live only in your Preview session. Production users still
+see the old version.
+
+### Quick checklist
+
+```
+[ ] Tag created in GTM with the right consent_storage requirement
+[ ] Verified in Preview: blocked when refused, fired when accepted
+[ ] Vendor declared in /privacy (name, purpose, retention, vendor's policy)
+[ ] CookieConsent `version` prop bumped (forces re-consent)
+[ ] GTM container Submitted + Published
+```
+
+## Loading a vendor outside GTM (when you can't use a tag)
+
+If the vendor must be loaded directly from your code (e.g. a Next.js
+`<Script>` you'd rather not push through GTM), wait for the user's
+choice before loading it:
+
+```tsx
+"use client";
+import { useEffect, useState } from "react";
+import { loadConsent } from "@matejicek-me/consent-manager";
+
+export function ZohoLoader() {
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    const consent = loadConsent("2026.05"); // same version as <CookieConsent />
+    if (consent?.choices.analytics) setAllowed(true);
+
+    const onUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.choices?.analytics) setAllowed(true);
+      else setAllowed(false);
+    };
+    window.addEventListener("matejicekme-consent:change", onUpdate);
+    return () => window.removeEventListener("matejicekme-consent:change", onUpdate);
+  }, []);
+
+  if (!allowed) return null;
+  return <script async src="https://js.zoho.eu/.../analytics.js" />;
+}
+```
+
+Or just pass `onChange` to `<CookieConsent />` and load from there if
+your loader is centralized.
+
 ## Theming
 
 Override the CSS custom properties on the root either via your own stylesheet or inline:
