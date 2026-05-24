@@ -1,0 +1,61 @@
+{
+  "name": "@matejicek-me/consent-manager",
+  "version": "0.1.0",
+  "description": "Tiny, themeable, GDPR/CNIL-compliant cookie consent manager for React with built-in Google Consent Mode v2 support.",
+  "keywords": [
+    "cookie",
+    "consent",
+    "gdpr",
+    "cnil",
+    "rgpd",
+    "consent-mode",
+    "google-consent-mode",
+    "react",
+    "next"
+  ],
+  "license": "MIT",
+  "author": "Jordan Matejicek <jordan@matejicek.me>",
+  "homepage": "https://github.com/matejicekme/consent-manager",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matejicekme/consent-manager.git"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsc && node scripts/copy-assets.mjs",
+    "dev": "tsc --watch",
+    "clean": "node scripts/clean.mjs",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,329 @@
+/*
+ * @matejicekme/consent-manager — styles
+ *
+ * Theming: override the CSS variables on `.mcm-root` from the consuming app
+ * (either via a parent selector or by passing `style={{ '--mcm-accent': ... }}`).
+ */
+
+.mcm-root {
+  --mcm-bg: #ffffff;
+  --mcm-text: #0f172a;
+  --mcm-muted: #6b7280;
+  --mcm-border: rgba(15, 23, 42, 0.1);
+  --mcm-border-strong: rgba(15, 23, 42, 0.2);
+  --mcm-radius: 14px;
+  --mcm-radius-button: 10px;
+  --mcm-accent: #2563eb;
+  --mcm-accent-text: #ffffff;
+  --mcm-accent-hover: #1d4ed8;
+  --mcm-subtle-bg: #f8fafc;
+  --mcm-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mcm-shadow: 0 20px 40px -16px rgba(15, 23, 42, 0.22), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  --mcm-overlay: rgba(15, 23, 42, 0.42);
+  --mcm-z: 2147483000;
+
+  font-family: var(--mcm-font);
+  color: var(--mcm-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.mcm-root *,
+.mcm-root *::before,
+.mcm-root *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Banner (compact bottom-right card) ---------- */
+
+.mcm-banner {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: var(--mcm-z);
+  width: min(420px, calc(100vw - 32px));
+  background: var(--mcm-bg);
+  border: 1px solid var(--mcm-border);
+  border-radius: var(--mcm-radius);
+  box-shadow: var(--mcm-shadow);
+  padding: 18px 18px 16px;
+  animation: mcm-slide-up 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes mcm-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mcm-banner-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.mcm-banner-body {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  color: var(--mcm-muted);
+}
+
+.mcm-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------- Buttons ---------- */
+
+.mcm-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  padding: 9px 14px;
+  border-radius: var(--mcm-radius-button);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: -0.005em;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 80ms ease;
+  white-space: nowrap;
+}
+
+.mcm-btn:active {
+  transform: translateY(1px);
+}
+
+.mcm-btn:focus-visible {
+  outline: 2px solid var(--mcm-accent);
+  outline-offset: 2px;
+}
+
+.mcm-btn-primary {
+  background: var(--mcm-accent);
+  color: var(--mcm-accent-text);
+}
+
+.mcm-btn-primary:hover {
+  background: var(--mcm-accent-hover);
+}
+
+.mcm-btn-secondary {
+  background: var(--mcm-subtle-bg);
+  color: var(--mcm-text);
+  border: 1px solid var(--mcm-border);
+}
+
+.mcm-btn-secondary:hover {
+  background: var(--mcm-bg);
+  border-color: var(--mcm-border-strong);
+}
+
+.mcm-btn-ghost {
+  color: var(--mcm-muted);
+}
+
+.mcm-btn-ghost:hover {
+  color: var(--mcm-text);
+  background: var(--mcm-subtle-bg);
+}
+
+/* ---------- Preferences modal ---------- */
+
+.mcm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--mcm-z);
+  background: var(--mcm-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: mcm-fade-in 200ms ease both;
+}
+
+@keyframes mcm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mcm-modal {
+  background: var(--mcm-bg);
+  border-radius: var(--mcm-radius);
+  box-shadow: var(--mcm-shadow);
+  width: min(560px, 100%);
+  max-height: min(85vh, 720px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: mcm-modal-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes mcm-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mcm-modal-header {
+  padding: 20px 22px 8px;
+}
+
+.mcm-modal-title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.mcm-modal-intro {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--mcm-muted);
+}
+
+.mcm-modal-body {
+  padding: 8px 22px 4px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.mcm-category {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--mcm-border);
+}
+
+.mcm-category:last-child {
+  border-bottom: 0;
+}
+
+.mcm-category-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mcm-category-label {
+  margin: 0 0 3px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.mcm-category-description {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mcm-muted);
+}
+
+/* Toggle switch */
+.mcm-toggle {
+  --mcm-toggle-w: 38px;
+  --mcm-toggle-h: 22px;
+  flex-shrink: 0;
+  width: var(--mcm-toggle-w);
+  height: var(--mcm-toggle-h);
+  position: relative;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.mcm-toggle input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.mcm-toggle input:disabled {
+  cursor: not-allowed;
+}
+
+.mcm-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--mcm-border-strong);
+  border-radius: 999px;
+  transition: background 160ms ease;
+}
+
+.mcm-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(var(--mcm-toggle-h) - 4px);
+  height: calc(var(--mcm-toggle-h) - 4px);
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mcm-toggle input:checked ~ .mcm-toggle-track {
+  background: var(--mcm-accent);
+}
+
+.mcm-toggle input:checked ~ .mcm-toggle-thumb {
+  transform: translateX(calc(var(--mcm-toggle-w) - var(--mcm-toggle-h)));
+}
+
+.mcm-toggle input:focus-visible ~ .mcm-toggle-track {
+  outline: 2px solid var(--mcm-accent);
+  outline-offset: 2px;
+}
+
+.mcm-toggle input:disabled ~ .mcm-toggle-track {
+  opacity: 0.55;
+}
+
+.mcm-modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 22px 18px;
+  border-top: 1px solid var(--mcm-border);
+  background: var(--mcm-subtle-bg);
+  justify-content: space-between;
+}
+
+.mcm-modal-footer-left,
+.mcm-modal-footer-right {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mcm-privacy {
+  color: var(--mcm-muted);
+  text-decoration: none;
+  font-size: 12.5px;
+  padding: 6px 0;
+}
+
+.mcm-privacy:hover {
+  color: var(--mcm-text);
+  text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 480px) {
+  .mcm-banner {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    padding: 16px;
+  }
+  .mcm-banner-actions {
+    flex-direction: column;
+  }
+  .mcm-banner-actions .mcm-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
